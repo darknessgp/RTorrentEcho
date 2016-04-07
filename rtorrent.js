@@ -71,10 +71,10 @@ Rtorrent.prototype.getMulticall = function(method, param, cmds, callback) {
   });
 };
 
-Rtorrent.prototype.getTorrents = function(callback) {
+Rtorrent.prototype.getTorrents = function(hash, callback) {
   var self = this;
 
-  self.getMulticall('d.multicall', ['main'], fields.torrents, function(err, data) {
+  self.getMulticall('d.multicall', [hash || 'main'], fields.torrents, function(err, data) {
     if (err) return callback(err);
 
     for (var i in data) {
@@ -159,6 +159,15 @@ Rtorrent.prototype.setPath = function(hash, directory, callback) {
 Rtorrent.prototype.setLabel = function(hash, label, callback) {
   this.get('d.custom1.set', [hash, label], callback);
 };
+
+Rtorrent.prototype.getSingle = function(hash, callback){
+  this.get('d.get_complete', [hash], callback);
+
+}
+
+Rtorrent.prototype.getCommands = function(callback){
+  this.get('system.listMethods', null, callback);
+}
 
 module.exports = Rtorrent;
 

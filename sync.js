@@ -49,7 +49,7 @@ Sync.prototype.sync = function(label, location, doneLabel, callback) {
 
     console.log("Getting Torrents");
 
-    self.rtorrent.getTorrents(function(err, data) {
+    self.rtorrent.getTorrents("83EEB72C2E51B71EDEF70AD0ABDC02F2D3661ABC", function(err, data) {
             if (err) return console.log('err: ', err);
 
             // filter down to torrents with the label and are complete
@@ -67,20 +67,25 @@ Sync.prototype.sync = function(label, location, doneLabel, callback) {
                             // Set global tag to true, since we are going to try downloading it.
                             global.torrents[item.hash] = new Torrent(item.complete == 1, item.ismultifile, item.name, item.path, location);
                             WriteMessage("Adding " + item.name + " to download", callback);
+
+                             // If the torrent isn't complete, check it
+                            if (!(item.complete == 1)){
+                              CheckTorrentComplete(item.hash);
+                            }
                         }
             });
 
         WriteMessage("Starting Download", callback, true);
 
-        // Check if we are already downloading, if not, start the download.
+        //Check if we are already downloading, if not, start the download.
         if (!global.isDownloading) {
           var nextTorrentHash = GetNextTorrent();
           if (nextTorrentHash){
             self.ProcessDownload(nextTorrentHash);
           }
         }
-    });
-};
+      }
+});
 
 Sync.prototype.ProcessDownload = function(torrentHash) {
     var item = global.torrents[torrentHash];
@@ -130,6 +135,28 @@ Sync.prototype.ProcessDownload = function(torrentHash) {
         });
     }
 };
+
+Sync.prototype.DownloadNext = function(){
+  // Check if we should try to download it immediately
+  if (global.isDownloading == false){
+    var nextTorrentHash = GetNextTorrent();
+    if (nextTorrentHash){
+      self.ProcessDownload(nextTorrentHash);
+    }
+  }
+}
+
+Sync.prototype.CheckTorrentComplete = function(hash){
+  self.rtorrent.getSingle(hash, function(err, data){
+          if (err) return console.log('err: ', err);
+          if (data == 1) {
+            global.torrents[hash].ShouldDownload = true;
+          } else {
+            // Otherwise check again in 15 seconds
+            setTimeout(function(){ self.CheckTorrentComplete(hash); }, 15000)
+          }
+  });
+}
 
 function GetNextTorrent() {
   var keys = Object.keys(global.torrents);
