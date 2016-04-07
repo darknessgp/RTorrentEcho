@@ -71,10 +71,10 @@ Rtorrent.prototype.getMulticall = function(method, param, cmds, callback) {
   });
 };
 
-Rtorrent.prototype.getTorrents = function(hash, callback) {
+Rtorrent.prototype.getTorrents = function(callback) {
   var self = this;
 
-  self.getMulticall('d.multicall', [hash || 'main'], fields.torrents, function(err, data) {
+  self.getMulticall('d.multicall', ['main'], fields.torrents, function(err, data) {
     if (err) return callback(err);
 
     for (var i in data) {
