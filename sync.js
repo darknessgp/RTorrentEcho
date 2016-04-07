@@ -49,7 +49,7 @@ Sync.prototype.sync = function(label, location, doneLabel, callback) {
 
     console.log("Getting Torrents");
 
-    self.rtorrent.getTorrents("83EEB72C2E51B71EDEF70AD0ABDC02F2D3661ABC", function(err, data) {
+    self.rtorrent.getTorrents(function(err, data) {
             if (err) return console.log('err: ', err);
 
             // filter down to torrents with the label and are complete
