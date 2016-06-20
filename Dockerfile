@@ -1,6 +1,6 @@
 FROM mhart/alpine-node:5.10
 
-RUN apk add --no-cache bash lftp openssh
+RUN apk add --no-cache bash lftp openssh unrar
 
 WORKDIR /src
 COPY . /src
