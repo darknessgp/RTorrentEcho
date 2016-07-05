@@ -1,6 +1,7 @@
 var FTPS = require('./lftp.js');
 var Rtorrent = require('./rtorrent.js');
 var Torrent = require('./torrent.js');
+var Unrar = require('./unrar.js');
 
 if (!global.torrents) {
     global.torrents = [];
@@ -44,6 +45,8 @@ function Sync(config) {
         autoConfirm: true,
         additionalLftpCommands: additionalCommands
     });
+
+    self.unrar = new Unrar(config);
 };
 
 Sync.prototype.sync = function(label, location, doneLabel, callback) {
@@ -109,6 +112,11 @@ Sync.prototype.ProcessDownload = function(torrentHash) {
                 WriteMessage(err + " " + data.error + " " + data.data);
             } else {
                 WriteMessage("LFTP Response: " + data.data);
+
+                if (item.IsDirectory) {
+                    // Make call to try and unrar the folder
+                    self.unrar.HandleFolder(item.Path);
+                }
             }
 
             // Call cleanup with the configurable delay, so external processes can do whatever they need.
