@@ -1,12 +1,15 @@
 var fs = require('fs');
 var path = require('path');
 var rarModule = require('node-unrar');
+var escape = function(input) {return require('shell-escape')([input])}
 
 function Unrar(config) {
 };
 
 // Method for checking if there are rar'd files to uncompress
 Unrar.prototype.HandleFolder = function(folderPath) {
+    folderPath = escape(folderPath);
+
     //figure out path to the rar file, if there is one
     var rarFile = '';
     var files = fs.readdirSync(folderPath);
@@ -17,8 +20,8 @@ Unrar.prototype.HandleFolder = function(folderPath) {
            break;
        }
     }
-
-    var rar = new rarModule(rarFile);
+    // Construct the rar module with the full rar path
+    var rar = new rarModule(folderPath + rarFile);
 
     rar.extract(folderPath, null, function(err) {
         if (err) {
