@@ -115,7 +115,7 @@ Sync.prototype.ProcessDownload = function(torrentHash) {
 
                 if (item.IsDirectory) {
                     // Make call to try and unrar the folder
-                    self.unrar.HandleFolder(item.Path);
+                    self.unrar.HandleFolder(item.DownloadLocation + "/" + item.Name);
                 }
             }
 

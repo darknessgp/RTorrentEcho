@@ -3,7 +3,6 @@ var path = require('path');
 var rarModule = require('node-unrar');
 
 function Unrar(config) {
-    self = this;
 };
 
 // Method for checking if there are rar'd files to uncompress
